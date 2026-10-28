@@ -1,0 +1,37 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore ShopFloor.slnx
+
+      - name: Build
+        run: dotnet build ShopFloor.slnx --configuration Release --no-restore
+
+      # Integration tests start PostgreSQL with Testcontainers, using the runner's Docker
+      - name: Test
+        run: dotnet test --solution ShopFloor.slnx --configuration Release --no-build
+
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build API image
+        run: docker build --file src/ShopFloor.Api/Dockerfile .
