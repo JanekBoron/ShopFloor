@@ -50,7 +50,11 @@ public static class LineEndpoints
         TimeProvider timeProvider,
         CancellationToken ct)
     {
-        var line = ProductionLine.Create(request.Code, request.Name, timeProvider.GetUtcNow());
+        // PostgreSQL stores timestamps with microsecond precision, so the response must not carry more
+        var now = timeProvider.GetUtcNow();
+        now = now.AddTicks(-(now.Ticks % TimeSpan.TicksPerMicrosecond));
+
+        var line = ProductionLine.Create(request.Code, request.Name, now);
 
         if (await db.ProductionLines.AnyAsync(l => l.Code == line.Code, ct))
         {
