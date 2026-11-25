@@ -17,6 +17,11 @@ public sealed class ShopFloorApiFactory : WebApplicationFactory<Program>, IAsync
     public async ValueTask InitializeAsync()
     {
         await _postgres.StartAsync();
+
+        // Start the app (and run migrations) once, before any test runs. Test classes run in
+        // parallel, and WebApplicationFactory is not thread-safe when it builds the host lazily
+        // on the first CreateClient call.
+        using var _ = CreateClient();
     }
 
     public override async ValueTask DisposeAsync()

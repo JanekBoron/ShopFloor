@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using ShopFloor.Api.Data;
 using ShopFloor.Domain.Lines;
 
@@ -50,11 +49,7 @@ public static class LineEndpoints
         TimeProvider timeProvider,
         CancellationToken ct)
     {
-        // PostgreSQL stores timestamps with microsecond precision, so the response must not carry more
-        var now = timeProvider.GetUtcNow();
-        now = now.AddTicks(-(now.Ticks % TimeSpan.TicksPerMicrosecond));
-
-        var line = ProductionLine.Create(request.Code, request.Name, now);
+        var line = ProductionLine.Create(request.Code, request.Name, timeProvider.GetUtcNowForDatabase());
 
         if (await db.ProductionLines.AnyAsync(l => l.Code == line.Code, ct))
         {
@@ -67,7 +62,7 @@ public static class LineEndpoints
         {
             await db.SaveChangesAsync(ct);
         }
-        catch (DbUpdateException ex) when (ex.InnerException is PostgresException { SqlState: PostgresErrorCodes.UniqueViolation })
+        catch (DbUpdateException ex) when (ex.IsUniqueViolation())
         {
             // Another request created the same code between the check above and the insert
             return CodeAlreadyExists(line.Code);

@@ -18,7 +18,7 @@ The idea comes from my work on Manufacturing Execution Systems (MES), where OEE 
 The project is in early development. Planned milestones:
 
 - [x] Web API skeleton: production lines, EF Core with PostgreSQL, Docker Compose, CI
-- [ ] Machines and work orders
+- [x] Machines and work orders
 - [ ] Machine simulator publishing events to RabbitMQ
 - [ ] OEE calculation per line and shift
 - [ ] Transactional outbox and idempotent consumers
@@ -108,6 +108,17 @@ Integration tests need a running Docker engine: Testcontainers starts a throwawa
 | `GET` | `/api/lines` | List production lines |
 | `GET` | `/api/lines/{id}` | Get a production line |
 | `POST` | `/api/lines` | Create a production line (`409` if the code is taken) |
+| `GET` | `/api/lines/{lineId}/machines` | List the machines on a line |
+| `POST` | `/api/lines/{lineId}/machines` | Add a machine with its ideal cycle time (`409` if the code is taken on that line) |
+| `GET` | `/api/machines/{id}` | Get a machine |
+| `GET` | `/api/work-orders?lineId=&status=` | List work orders, optionally filtered by line and status |
+| `GET` | `/api/work-orders/{id}` | Get a work order |
+| `POST` | `/api/work-orders` | Create a work order (`409` if the number is taken) |
+| `POST` | `/api/work-orders/{id}/start` | Start a planned order (`409` if another order is already running on the line) |
+| `POST` | `/api/work-orders/{id}/complete` | Complete an order in progress |
+| `POST` | `/api/work-orders/{id}/cancel` | Cancel a planned or running order |
+
+Work orders follow a simple state machine: `Planned → InProgress → Completed`, and `Planned` or `InProgress → Cancelled`. A line runs at most one work order at a time; a partial unique index in PostgreSQL enforces this even under concurrent requests.
 
 ## License
 
