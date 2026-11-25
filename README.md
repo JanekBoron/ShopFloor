@@ -83,6 +83,15 @@ dotnet run --project src/ShopFloor.Api
 
 The API starts on http://localhost:5020. Example requests are in [`ShopFloor.Api.http`](src/ShopFloor.Api/ShopFloor.Api.http).
 
+**Visual Studio 2026:**
+
+Open `ShopFloor.slnx`, then pick a startup project:
+
+- `ShopFloor.Api` with the `http` profile runs the API on your machine (start the database first with `docker compose up -d postgres`). Fastest for day-to-day debugging.
+- `docker-compose` runs the API and PostgreSQL in containers with the debugger attached.
+
+Both open the Scalar API reference in the browser. Tests run from Test Explorer.
+
 ## Tests
 
 ```bash

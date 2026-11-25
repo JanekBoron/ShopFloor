@@ -1,6 +1,7 @@
 services:
   postgres:
     image: postgres:18-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_DB: shopfloor
       POSTGRES_USER: shopfloor
