@@ -1,9 +1,16 @@
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using ShopFloor.Api.Data;
 using ShopFloor.Api.Features.Lines;
+using ShopFloor.Api.Features.Machines;
+using ShopFloor.Api.Features.WorkOrders;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Enums travel as text in JSON ("InProgress" instead of 1)
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
@@ -36,6 +43,8 @@ if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
 
 app.MapHealthChecks("/health");
 app.MapLineEndpoints();
+app.MapMachineEndpoints();
+app.MapWorkOrderEndpoints();
 
 app.Run();
 

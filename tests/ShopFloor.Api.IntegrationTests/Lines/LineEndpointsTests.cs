@@ -72,6 +72,5 @@ public class LineEndpointsTests(ShopFloorApiFactory factory)
         Assert.Equal("Healthy", await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
-    // Tests share one database, so every line gets its own code
-    private static string UniqueCode() => $"T-{Guid.NewGuid():N}"[..12].ToUpperInvariant();
+    private static string UniqueCode() => TestApi.UniqueCode();
 }

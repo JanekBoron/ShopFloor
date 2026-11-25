@@ -15,3 +15,48 @@ Content-Type: application/json
 ###
 
 GET {{baseUrl}}/api/lines
+
+###
+
+# Paste a line id from the responses above
+@lineId = 00000000-0000-0000-0000-000000000000
+
+POST {{baseUrl}}/api/lines/{{lineId}}/machines
+Content-Type: application/json
+
+{
+  "code": "FILLER-1",
+  "name": "Bottle filler",
+  "idealCycleTimeSeconds": 1.5
+}
+
+###
+
+GET {{baseUrl}}/api/lines/{{lineId}}/machines
+
+###
+
+POST {{baseUrl}}/api/work-orders
+Content-Type: application/json
+
+{
+  "number": "WO-2026-0001",
+  "lineId": "{{lineId}}",
+  "productCode": "BOTTLE-05L",
+  "plannedQuantity": 1000
+}
+
+###
+
+# Paste a work order id from the response above
+@workOrderId = 00000000-0000-0000-0000-000000000000
+
+POST {{baseUrl}}/api/work-orders/{{workOrderId}}/start
+
+###
+
+POST {{baseUrl}}/api/work-orders/{{workOrderId}}/complete
+
+###
+
+GET {{baseUrl}}/api/work-orders?lineId={{lineId}}&status=InProgress
