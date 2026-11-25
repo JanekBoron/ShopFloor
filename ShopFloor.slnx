@@ -1,4 +1,11 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".github/workflows/build.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/ShopFloor.Api/ShopFloor.Api.csproj" />
     <Project Path="src/ShopFloor.Domain/ShopFloor.Domain.csproj" />
@@ -7,4 +14,7 @@
     <Project Path="tests/ShopFloor.Api.IntegrationTests/ShopFloor.Api.IntegrationTests.csproj" />
     <Project Path="tests/ShopFloor.Domain.Tests/ShopFloor.Domain.Tests.csproj" />
   </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
 </Solution>
